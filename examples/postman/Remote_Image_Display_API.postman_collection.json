@@ -1,0 +1,145 @@
+{
+  "info": {
+    "_postman_id": "c71a396e-5f4c-47bc-8a71-61cfbc04d92a",
+    "name": "Remote Image Display API",
+    "description": "Production-ready Postman collection for the Remote Image Display API endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Images",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "filename",
+                  "value": "camera_01.png",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "postman-suite",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test upload from Postman collection",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/images",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "images"]
+            }
+          }
+        },
+        {
+          "name": "List Images",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/images?page=1&page_size=12",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "images"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/images/:image_id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "images", ":image_id"],
+              "variable": [{ "key": "image_id", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username_or_email\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "api_key",
+      "value": "sk_live_YOUR_KEY"
+    },
+    {
+      "key": "jwt_token",
+      "value": ""
+    }
+  ]
+}

@@ -1,0 +1,655 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation & Integration Guide - {{ app_name }}{% endblock %}
+{% block header_title %}API Documentation{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-10 pb-16">
+
+  <!-- Overview Header -->
+  <div class="bg-gradient-to-r from-blue-900/40 via-slate-800 to-slate-800 border border-blue-500/30 rounded-2xl p-8 shadow-xl">
+    <div class="flex items-center space-x-3 text-blue-400 mb-2">
+      <i class="fa-solid fa-satellite-dish text-xl"></i>
+      <span class="text-xs font-bold uppercase tracking-wider">Developer Reference & SDK Guides</span>
+    </div>
+    <h2 class="text-3xl font-extrabold text-white">Remote Image Display API</h2>
+    <p class="text-slate-300 text-sm mt-2 max-w-2xl leading-relaxed">
+      A high-performance, secure REST API designed for automated programs, IoT devices, desktop utilities, and web servers to stream incoming images in real-time straight to your web dashboard.
+    </p>
+  </div>
+
+  <!-- QUICK START (SECTION 40) -->
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-4">
+    <h3 class="text-base font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+      <i class="fa-solid fa-forward-step text-emerald-400"></i>
+      <span>5-Step Quick Start</span>
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2">
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1">
+        <span class="text-xs font-bold text-blue-400 font-mono">STEP 1</span>
+        <h4 class="text-xs font-bold text-white">Create API Key</h4>
+        <p class="text-[11px] text-slate-400">Navigate to API Keys and generate a new key.</p>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1">
+        <span class="text-xs font-bold text-blue-400 font-mono">STEP 2</span>
+        <h4 class="text-xs font-bold text-white">Copy API Key</h4>
+        <p class="text-[11px] text-slate-400">Copy the <code class="text-emerald-400">PS_...</code> key to your environment.</p>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1">
+        <span class="text-xs font-bold text-blue-400 font-mono">STEP 3</span>
+        <h4 class="text-xs font-bold text-white">Send Image</h4>
+        <p class="text-[11px] text-slate-400">Post multipart image data with <code class="text-slate-300">X-API-Key</code> header.</p>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1">
+        <span class="text-xs font-bold text-blue-400 font-mono">STEP 4</span>
+        <h4 class="text-xs font-bold text-white">Open Dashboard</h4>
+        <p class="text-[11px] text-slate-400">Have your browser open on <code class="text-slate-300">/dashboard</code>.</p>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1">
+        <span class="text-xs font-bold text-emerald-400 font-mono">STEP 5</span>
+        <h4 class="text-xs font-bold text-white">Live Display!</h4>
+        <p class="text-[11px] text-slate-400">Image appears instantly via WebSocket without refresh.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS (SECTION 57) -->
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-3">
+    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+      <i class="fa-solid fa-diagram-project text-blue-400"></i>
+      <span>Decoupled Architecture: Computer A vs Computer B</span>
+    </h3>
+    <p class="text-xs text-slate-300 leading-relaxed">
+      The sender program does <strong>NOT</strong> need to open a browser or interact with the dashboard:
+    </p>
+    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-slate-300 space-y-2">
+      <div class="text-blue-400">Computer A (Headless Server / Python / Raspberry Pi / Edge Device):</div>
+      <div class="pl-4 text-slate-400">POST image.png ➔ https://yourdomain.com/api/v1/images with X-API-Key</div>
+      <div class="text-emerald-400">Central API Server:</div>
+      <div class="pl-4 text-slate-400">Validates key ➔ Validates signature ➔ Stores file ➔ Emits WebSocket event</div>
+      <div class="text-amber-400">Computer B (Monitoring Station / Office Browser):</div>
+      <div class="pl-4 text-slate-400">Connected to /ws/dashboard ➔ Receives instant event ➔ Renders image instantly!</div>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION & SECURITY NOTICE (SECTION 58) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-3">
+      <h3 class="text-base font-bold text-white flex items-center space-x-2">
+        <i class="fa-solid fa-lock text-amber-400"></i>
+        <span>API Authentication</span>
+      </h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Supply your API key in every request using the <code class="text-emerald-400 font-mono bg-slate-900 px-1 py-0.5 rounded">X-API-Key</code> request header.
+      </p>
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 font-mono text-xs text-slate-300">
+        X-API-Key: PS_900a2dbb943ac30d39ba1993ca3614379a04bb
+      </div>
+      <p class="text-xs text-slate-400">
+        Alternative: <code class="text-slate-300">Authorization: Bearer PS_...</code> is also accepted. Anonymous image uploads are strictly forbidden.
+      </p>
+    </div>
+
+    <div class="bg-slate-800 border border-amber-500/30 rounded-2xl p-6 shadow-md space-y-3">
+      <h3 class="text-base font-bold text-white flex items-center space-x-2">
+        <i class="fa-solid fa-shield-halved text-amber-400"></i>
+        <span>API Key Security Rules</span>
+      </h3>
+      <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+        <li><strong>Never</strong> commit raw API keys to public GitHub repositories.</li>
+        <li><strong>Never</strong> embed secret API keys in client-side public web scripts.</li>
+        <li>Keep keys in environment variables (<code class="text-slate-200">.env</code>).</li>
+        <li>If a key is accidentally exposed, immediately revoke it in the dashboard.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ENDPOINT DETAILS & ERROR CODES -->
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-6">
+    <div class="flex items-center space-x-3 pb-4 border-b border-slate-700">
+      <span class="px-2.5 py-1 bg-emerald-600 text-white font-mono font-bold text-xs rounded-lg">POST</span>
+      <span class="font-mono text-sm text-white font-bold">/api/v1/images</span>
+    </div>
+
+    <div class="space-y-4">
+      <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Form Data Parameters</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900/60 text-slate-400 uppercase tracking-wider font-semibold">
+            <tr>
+              <th class="px-4 py-2.5">Field</th>
+              <th class="px-4 py-2.5">Type</th>
+              <th class="px-4 py-2.5">Required</th>
+              <th class="px-4 py-2.5">Description</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-700/60 font-medium">
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-emerald-400">file</td>
+              <td class="px-4 py-2.5">Binary File</td>
+              <td class="px-4 py-2.5 text-rose-400">Yes</td>
+              <td class="px-4 py-2.5">Image payload (PNG, JPEG, WEBP, GIF, BMP, TIFF up to 10MB)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-blue-400">filename</td>
+              <td class="px-4 py-2.5">String</td>
+              <td class="px-4 py-2.5 text-slate-400">Optional</td>
+              <td class="px-4 py-2.5">Custom original filename override</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-blue-400">client_id</td>
+              <td class="px-4 py-2.5">String</td>
+              <td class="px-4 py-2.5 text-slate-400">Optional</td>
+              <td class="px-4 py-2.5">Identifier for origin device (e.g. "Security-Cam-West")</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-blue-400">description</td>
+              <td class="px-4 py-2.5">String</td>
+              <td class="px-4 py-2.5 text-slate-400">Optional</td>
+              <td class="px-4 py-2.5">Text caption or note describing the capture</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-blue-400">metadata</td>
+              <td class="px-4 py-2.5">JSON / String</td>
+              <td class="px-4 py-2.5 text-slate-400">Optional</td>
+              <td class="px-4 py-2.5">Custom telemetry or sensor payload</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Error Responses Table -->
+    <div class="space-y-4 pt-4 border-t border-slate-700">
+      <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">HTTP Status Codes</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-emerald-400 font-bold">201 Created</span>
+            <span class="text-slate-400">Success</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Image verified, stored, and broadcasted to live dashboards.</p>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-rose-400 font-bold">401 Unauthorized</span>
+            <span class="text-slate-400">INVALID_API_KEY</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Missing, invalid, or revoked API key.</p>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-amber-400 font-bold">400 Bad Request</span>
+            <span class="text-slate-400">INVALID_IMAGE</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Corrupt file or unsupported magic byte signature.</p>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-rose-400 font-bold">413 Payload Too Large</span>
+            <span class="text-slate-400">FILE_TOO_LARGE</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Exceeds MAX_IMAGE_SIZE_MB (default 10 MB).</p>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-amber-400 font-bold">429 Too Many Requests</span>
+            <span class="text-slate-400">RATE_LIMITED</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Exceeded 100 requests / minute rate limit.</p>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between font-mono mb-1">
+            <span class="text-rose-400 font-bold">500 Server Error</span>
+            <span class="text-slate-400">SERVER_ERROR</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">Internal server or storage exception.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTI-LANGUAGE CODE EXAMPLES (SECTIONS 14 - 26) -->
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-md space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
+      <div>
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-code text-blue-400"></i>
+          <span>Multi-Language Integration Code</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">Select your preferred programming language below to view copy-pasteable examples.</p>
+      </div>
+
+      <!-- Language selector buttons -->
+      <div class="flex flex-wrap gap-1.5" id="lang-selector-tabs">
+        <button class="lang-tab active px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white" data-target="snippet-python">Python</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-javascript">JavaScript</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-nodejs">Node.js</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-php">PHP</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-curl">cURL</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-csharp">C# (.NET)</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-java">Java</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-go">Go</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-ruby">Ruby</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-swift">Swift (iOS)</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-kotlin">Kotlin (Android)</button>
+        <button class="lang-tab px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 text-slate-300 hover:text-white" data-target="snippet-postman">Postman</button>
+      </div>
+    </div>
+
+    <!-- CODE SNIPPET CONTAINERS -->
+    <div class="relative">
+      <button id="copy-code-btn" class="absolute top-3 right-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition flex items-center space-x-1.5 shadow z-10">
+        <i class="fa-solid fa-copy"></i>
+        <span>Copy Code</span>
+      </button>
+
+      <!-- 1. PYTHON -->
+      <div id="snippet-python" class="snippet-box">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-emerald-400 overflow-x-auto leading-relaxed">
+<code># Install: pip install requests
+import requests
+
+API_URL = "http://localhost:8000/api/v1/images"  # Replace with your deployed domain
+API_KEY = "YOUR_API_KEY"
+
+def upload_image(image_path: str, client_id: str = "python-client"):
+    headers = {
+        "X-API-Key": API_KEY
+    }
+
+    with open(image_path, "rb") as img:
+        files = {
+            "file": (image_path, img, "image/png")
+        }
+        data = {
+            "client_id": client_id,
+            "description": "Uploaded via Python client"
+        }
+
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            files=files,
+            data=data,
+            timeout=30
+        )
+
+    response.raise_for_status()
+    return response.json()
+
+if __name__ == "__main__":
+    result = upload_image("image.png")
+    print("Upload Result:", result)</code></pre>
+      </div>
+
+      <!-- 2. JAVASCRIPT BROWSER -->
+      <div id="snippet-javascript" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-cyan-400 overflow-x-auto leading-relaxed">
+<code>// JavaScript (Browser HTML Form or File Picker)
+const API_URL = "http://localhost:8000/api/v1/images";
+const API_KEY = "YOUR_API_KEY";
+
+async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("client_id", "web-browser");
+    formData.append("description", "Uploaded from browser file picker");
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "X-API-Key": API_KEY
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log("Upload Success:", result);
+        return result;
+    } catch (error) {
+        console.error("Upload Error:", error);
+    }
+}
+
+// Example listener
+document.querySelector("#image-input")?.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) uploadImage(file);
+});</code></pre>
+      </div>
+
+      <!-- 3. NODE.JS -->
+      <div id="snippet-nodejs" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-emerald-400 overflow-x-auto leading-relaxed">
+<code>// Node.js (v18+ with native fetch and FormData)
+import fs from "fs";
+
+const API_URL = "http://localhost:8000/api/v1/images";
+const API_KEY = "YOUR_API_KEY";
+const filePath = "image.png";
+
+async function uploadFromNode() {
+    const fileBuffer = fs.readFileSync(filePath);
+    const blob = new Blob([fileBuffer], { type: "image/png" });
+
+    const form = new FormData();
+    form.append("file", blob, "image.png");
+    form.append("client_id", "nodejs-worker");
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "X-API-Key": API_KEY
+        },
+        body: form
+    });
+
+    const data = await response.json();
+    console.log("Server response:", data);
+}
+
+uploadFromNode();</code></pre>
+      </div>
+
+      <!-- 4. PHP -->
+      <div id="snippet-php" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-purple-400 overflow-x-auto leading-relaxed">
+<code>&lt;?php
+// PHP cURL Example
+$apiUrl = "http://localhost:8000/api/v1/images";
+$apiKey = "YOUR_API_KEY";
+$filePath = "image.png";
+
+$curl = curl_init();
+
+$postFields = [
+    "file" => new CURLFile($filePath, "image/png", "image.png"),
+    "client_id" => "php-backend",
+    "description" => "Image from PHP cURL upload"
+];
+
+curl_setopt_array($curl, [
+    CURLOPT_URL => $apiUrl,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $postFields,
+    CURLOPT_HTTPHEADER => [
+        "X-API-Key: " . $apiKey
+    ],
+    CURLOPT_RETURNTRANSFER => true
+]);
+
+$response = curl_exec($curl);
+$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+curl_close($curl);
+
+echo "HTTP Status: " . $httpCode . "\n";
+echo "Response: " . $response . "\n";
+?&gt;</code></pre>
+      </div>
+
+      <!-- 5. CURL -->
+      <div id="snippet-curl" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-amber-300 overflow-x-auto leading-relaxed">
+<code># cURL Terminal Command
+curl -X POST "http://localhost:8000/api/v1/images" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -F "file=@image.png" \
+  -F "client_id=curl-cli" \
+  -F "description=Uploaded via cURL command"</code></pre>
+      </div>
+
+      <!-- 6. C# .NET -->
+      <div id="snippet-csharp" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-blue-300 overflow-x-auto leading-relaxed">
+<code>using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program {
+    static async Task Main() {
+        var apiUrl = "http://localhost:8000/api/v1/images";
+        var apiKey = "YOUR_API_KEY";
+        var imagePath = "image.png";
+
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+
+        using var form = new MultipartFormDataContent();
+        using var fileStream = File.OpenRead(imagePath);
+        using var streamContent = new StreamContent(fileStream);
+
+        form.Add(streamContent, "file", Path.GetFileName(imagePath));
+        form.Add(new StringContent("csharp-client"), "client_id");
+
+        var response = await client.PostAsync(apiUrl, form);
+        var resultJson = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine($"Status: {response.StatusCode}");
+        Console.WriteLine($"Response: {resultJson}");
+    }
+}</code></pre>
+      </div>
+
+      <!-- 7. JAVA -->
+      <div id="snippet-java" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-orange-400 overflow-x-auto leading-relaxed">
+<code>// Java 11+ HttpClient with Multipart
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class ImageUploader {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String apiUrl = "http://localhost:8000/api/v1/images";
+        String apiKey = "YOUR_API_KEY";
+        Path imagePath = Path.of("image.png");
+
+        String boundary = "---" + System.currentTimeMillis();
+        byte[] fileBytes = Files.readAllBytes(imagePath);
+
+        StringBuilder body = new StringBuilder();
+        body.append("--").append(boundary).append("\r\n");
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"image.png\"\r\n");
+        body.append("Content-Type: image/png\r\n\r\n");
+
+        byte[] headerBytes = body.toString().getBytes();
+        byte[] footerBytes = ("\r\n--" + boundary + "--\r\n").getBytes();
+
+        byte[] payload = new byte[headerBytes.length + fileBytes.length + footerBytes.length];
+        System.arraycopy(headerBytes, 0, payload, 0, headerBytes.length);
+        System.arraycopy(fileBytes, 0, payload, headerBytes.length, fileBytes.length);
+        System.arraycopy(footerBytes, 0, payload, headerBytes.length + fileBytes.length, footerBytes.length);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("X-API-Key", apiKey)
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofByteArray(payload))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Status: " + response.statusCode());
+        System.out.println("Response: " + response.body());
+    }
+}</code></pre>
+      </div>
+
+      <!-- 8. GO -->
+      <div id="snippet-go" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-cyan-300 overflow-x-auto leading-relaxed">
+<code>package main
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+)
+
+func main() {
+	apiUrl := "http://localhost:8000/api/v1/images"
+	apiKey := "YOUR_API_KEY"
+	filePath := "image.png"
+
+	file, err := os.Open(filePath)
+	if err != nil { panic(err) }
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", "image.png")
+	if err != nil { panic(err) }
+	io.Copy(part, file)
+	writer.WriteField("client_id", "go-uploader")
+	writer.Close()
+
+	req, err := http.NewRequest("POST", apiUrl, body)
+	if err != nil { panic(err) }
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("X-API-Key", apiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil { panic(err) }
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Printf("Status: %s\nResponse: %s\n", resp.Status, string(respBody))
+}</code></pre>
+      </div>
+
+      <!-- 9. RUBY -->
+      <div id="snippet-ruby" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-red-400 overflow-x-auto leading-relaxed">
+<code># Ruby using Net::HTTP
+require 'net/http'
+require 'uri'
+
+uri = URI.parse("http://localhost:8000/api/v1/images")
+api_key = "YOUR_API_KEY"
+file_path = "image.png"
+
+file = File.open(file_path, "rb")
+params = {
+  "file" => UploadIO.new(file, "image/png", "image.png"),
+  "client_id" => "ruby-client"
+}
+
+req = Net::HTTP::Post::Multipart.new(uri.path, params)
+req['X-API-Key'] = api_key
+
+res = Net::HTTP.start(uri.host, uri.port) do |http|
+  http.request(req)
+end
+
+puts "Status: #{res.code}"
+puts "Body: #{res.body}"</code></pre>
+      </div>
+
+      <!-- 10. SWIFT -->
+      <div id="snippet-swift" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-amber-400 overflow-x-auto leading-relaxed">
+<code>// Swift URLSession (iOS / macOS)
+import Foundation
+
+func uploadImage(imageURL: URL, apiKey: String) {
+    let url = URL(string: "http://localhost:8000/api/v1/images")!
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+
+    let boundary = UUID().uuidString
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+    var data = Data()
+    let imageData = try? Data(contentsOf: imageURL)
+
+    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+    data.append("Content-Disposition: form-data; name=\"file\"; filename=\"image.png\"\r\n".data(using: .utf8)!)
+    data.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
+    if let img = imageData { data.append(img) }
+    data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+
+    let task = URLSession.shared.uploadTask(with: request, from: data) { responseData, response, error in
+        if let responseData = responseData, let json = String(data: responseData, encoding: .utf8) {
+            print("Response:", json)
+        }
+    }
+    task.resume()
+}</code></pre>
+      </div>
+
+      <!-- 11. KOTLIN / ANDROID -->
+      <div id="snippet-kotlin" class="snippet-box hidden">
+        <pre class="bg-slate-950 p-5 rounded-2xl text-xs font-mono text-purple-400 overflow-x-auto leading-relaxed">
+<code>// Kotlin / Android using OkHttp
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+
+fun uploadImage(file: File, apiKey: String) {
+    val client = OkHttpClient()
+    val mediaType = "image/png".toMediaTypeOrNull()
+    val fileBody = file.asRequestBody(mediaType)
+
+    val requestBody = MultipartBody.Builder()
+        .setType(MultipartBody.FORM)
+        .addFormDataPart("file", file.name, fileBody)
+        .addFormDataPart("client_id", "android-device")
+        .build()
+
+    val request = Request.Builder()
+        .url("http://localhost:8000/api/v1/images")
+        .addHeader("X-API-Key", apiKey)
+        .post(requestBody)
+        .build()
+
+    client.newCall(request).execute().use { response ->
+        println("Status: ${response.code}")
+        println("Response: ${response.body?.string()}")
+    }
+}</code></pre>
+      </div>
+
+      <!-- 12. POSTMAN -->
+      <div id="snippet-postman" class="snippet-box hidden">
+        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-4">
+          <h4 class="font-bold text-white text-sm">Postman Configuration Guide</h4>
+          <ol class="space-y-2 list-decimal list-inside text-slate-400">
+            <li>Open Postman and create a new request.</li>
+            <li>Set HTTP method to <strong class="text-emerald-400">POST</strong>.</li>
+            <li>Enter URL: <code class="text-blue-400 bg-slate-900 px-1 py-0.5 rounded">https://yourdomain.com/api/v1/images</code></li>
+            <li>In the <strong>Headers</strong> tab, add:
+              <div class="mt-1 font-mono text-emerald-400 bg-slate-900 p-2 rounded">Key: X-API-Key  |  Value: YOUR_API_KEY</div>
+            </li>
+            <li>In the <strong>Body</strong> tab:
+              <ul class="list-disc list-inside pl-4 mt-1 space-y-1">
+                <li>Select <strong class="text-slate-200">form-data</strong></li>
+                <li>Add key: <code class="text-slate-200">file</code>, change type dropdown on the right from <strong class="text-slate-200">Text</strong> to <strong class="text-slate-200">File</strong></li>
+                <li>Click <em>Select Files</em> and choose an image (<code class="text-slate-300">image.png</code>)</li>
+                <li>(Optional) Add key: <code class="text-slate-200">client_id</code> with text value <code class="text-slate-300">postman-client</code></li>
+              </ul>
+            </li>
+            <li>Click <strong>Send</strong>. You will receive <strong class="text-emerald-400">HTTP 201 Created</strong> with image URL and metadata!</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/docs.js"></script>
+{% endblock %}

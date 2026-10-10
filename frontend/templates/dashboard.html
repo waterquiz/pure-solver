@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome Back! - Pure Kolo{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Welcome Header (Clean Pure Kolo Style) -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">Welcome Back!</h1>
+      <p class="text-xs lg:text-sm text-slate-500 mt-1">Live 9-grid image stream & automated AI solver from connected browser extensions.</p>
+    </div>
+
+    <!-- Right Header Badges -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Date Badge -->
+      <div class="flex items-center gap-2 px-3.5 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-medium text-slate-600 shadow-sm">
+        <i class="fa-regular fa-calendar text-slate-400"></i>
+        <span id="current-date-badge">Wednesday, Oct 7, 2026</span>
+      </div>
+
+      <!-- Real-Time WebSocket Connection Status -->
+      <div id="ws-status-badge" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-semibold text-slate-700 shadow-sm">
+        <span id="ws-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-green"></span>
+        <span id="ws-status-text">Connected</span>
+      </div>
+
+      <!-- Active Screen Slot Badge -->
+      <div class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200/80 rounded-xl text-xs font-bold text-blue-700 shadow-sm">
+        <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
+        <span id="header-slot-text">0 / 12 Active</span>
+      </div>
+
+      <!-- Notification Bell -->
+      <button class="w-9 h-9 rounded-xl bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 flex items-center justify-center text-sm shadow-sm transition">
+        <i class="fa-regular fa-bell"></i>
+      </button>
+
+      <!-- User Badge -->
+      <div class="flex items-center gap-2 px-3 py-1 bg-white border border-slate-200/80 rounded-xl text-xs font-semibold text-slate-800 shadow-sm">
+        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-[11px]" id="header-user-avatar">U</div>
+        <span id="header-user-name">User</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Stat Cards (Pure Kolo Style) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+
+    <!-- Card 1: Images On Screen (12 Max) -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between transition hover:shadow-md">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+          <i class="fa-solid fa-images"></i>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-bold text-slate-900" id="stat-screen-images">0</span>
+            <span class="text-xs text-slate-400 font-mono">/ 12</span>
+          </div>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">Images On Screen</p>
+        </div>
+      </div>
+      <div class="text-blue-500 text-sm">
+        <i class="fa-solid fa-chart-simple"></i>
+      </div>
+    </div>
+
+    <!-- Card 2: Running / Puter AI -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between transition hover:shadow-md">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+          <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+        </div>
+        <div class="overflow-hidden">
+          <span class="text-base font-bold text-slate-900 block truncate" id="stat-ai-model-display">gemini-2.5-flash</span>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">Puter AI Engine</p>
+        </div>
+      </div>
+      <div class="text-emerald-500 text-sm">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+    </div>
+
+    <!-- Card 3: Backend Queue -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between transition hover:shadow-md">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0">
+          <i class="fa-solid fa-boxes-stacked text-base"></i>
+        </div>
+        <div>
+          <span class="text-2xl font-bold text-slate-900" id="stat-queued-images">0</span>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">Backend Queue</p>
+        </div>
+      </div>
+      <div class="text-amber-500 text-sm">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+      </div>
+    </div>
+
+    <!-- Card 4: Total API Keys -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex items-center justify-between transition hover:shadow-md">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl flex-shrink-0">
+          <i class="fa-solid fa-key text-base"></i>
+        </div>
+        <div>
+          <span class="text-2xl font-bold text-slate-900" id="stat-total-keys">--</span>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">Total API Keys</p>
+        </div>
+      </div>
+      <div class="text-purple-500 text-sm">
+        <i class="fa-solid fa-chart-pie"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Toolbar (Purpose-Built for Image Stream & AI Hub) -->
+  <div class="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm">
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- AI Model Selector (Blue Pill) -->
+      <div class="flex items-center bg-blue-50/80 border border-blue-200/80 rounded-xl px-3 py-1.5 gap-2 shadow-sm">
+        <i class="fa-solid fa-wand-magic-sparkles text-blue-600 text-xs"></i>
+        <label for="ai-model-select" class="text-[11px] font-bold text-blue-900 tracking-tight">AI Model:</label>
+        <select id="ai-model-select" class="bg-transparent text-blue-900 text-xs font-semibold focus:outline-none cursor-pointer">
+          <option value="gemini-2.5-flash" selected>gemini-2.5-flash (Balanced Version - Recommended)</option>
+          <option value="claude-3-5-sonnet">claude-3-5-sonnet (Top Precision)</option>
+          <option value="gpt-4o">gpt-4o (OpenAI Vision)</option>
+          <option value="gpt-4o-mini">gpt-4o-mini (Fast & Smart)</option>
+          <option value="gemini-1.5-flash">gemini-1.5-flash (Fast)</option>
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (Fastest)</option>
+        </select>
+        <span id="model-save-status" class="text-[10px] text-blue-600 font-mono"></span>
+      </div>
+
+      <!-- Puter Connect / Status Button -->
+      <div id="puter-auth-container">
+        <button id="puter-connect-btn" class="px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-bolt text-blue-600 text-xs"></i>
+          <span>Puter SDK</span>
+        </button>
+      </div>
+
+      <!-- Refresh Stream Button -->
+      <button id="toolbar-refresh-btn" class="px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition" title="Refresh live stream">
+        <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+        <span>Refresh</span>
+      </button>
+
+      <!-- Clear All Images Button -->
+      <button id="toolbar-clear-btn" class="px-3.5 py-1.5 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition" title="Clear all images">
+        <i class="fa-regular fa-trash-can text-slate-400"></i>
+        <span>Clear All</span>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Search / Live Filter Input (Filters cards by client ID or target prompt) -->
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="image-search-input" placeholder="Filter by Client ID or text..." class="pl-9 pr-8 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-52 sm:w-64 transition">
+        <button id="clear-search-btn" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs" title="Clear filter">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Add Key Button (Primary Blue) -->
+      <a href="/dashboard/api-keys" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+        <i class="fa-solid fa-plus text-xs"></i>
+        <span>Manage Keys</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MULTI-IMAGE BOXES CONTAINER (EACH IMAGE HAS ITS OWN DEDICATED BOX) -->
+  <div id="image-boxes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <!-- Initial Loading State -->
+    <div class="col-span-full py-16 text-center text-slate-400 text-sm">
+      <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-500 mb-2"></i>
+      <p>Loading live image stream...</p>
+    </div>
+  </div>
+
+  <!-- NO SEARCH RESULTS FOUND STATE -->
+  <div id="no-search-results" class="hidden bg-white border border-slate-200 rounded-2xl p-12 text-center space-y-3 shadow-sm">
+    <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center text-xl">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+    <h4 class="text-sm font-bold text-slate-800">No matching images found</h4>
+    <p class="text-xs text-slate-400 max-w-sm mx-auto">No active cards match your filter. Clear the search box to view all active screen slots.</p>
+    <button id="reset-filter-btn" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+      Reset Filter
+    </button>
+  </div>
+
+  <!-- EMPTY STATE PLACEHOLDER -->
+  <div id="empty-stream-placeholder" class="hidden bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-5 shadow-sm">
+    <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center text-2xl shadow-inner">
+      <i class="fa-solid fa-bolt"></i>
+    </div>
+    <div class="space-y-1">
+      <h4 class="text-base font-bold text-slate-900">Waiting for CAPTCHA images from browser extensions</h4>
+      <p class="text-xs text-slate-500 max-w-lg mx-auto">
+        Your 12 to 24 browser extensions send 9-grid CAPTCHAs here in real-time. Up to 12 images are displayed simultaneously with automated Puter AI vision solving and 4-second auto-cleaning.
+      </p>
+    </div>
+
+    <!-- Quick Extension Config Card -->
+    <div class="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left space-y-2">
+      <div class="flex items-center justify-between text-xs">
+        <span class="font-bold text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-key text-blue-600"></i> Active API Key
+        </span>
+        <span class="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Ready</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="text" readonly value="PS_900a2dbb943ac30d39ba1993ca3614379a04bb" class="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 font-mono text-[11px] text-slate-700 focus:outline-none select-all" id="quick-copy-key">
+        <button onclick="navigator.clipboard.writeText('PS_900a2dbb943ac30d39ba1993ca3614379a04bb'); showToast('API key copied to clipboard!', 'success')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1">
+          <i class="fa-regular fa-copy"></i>
+          <span>Copy</span>
+        </button>
+      </div>
+      <div class="text-[11px] text-slate-400 flex items-center justify-between pt-1">
+        <span>Endpoint: <code class="font-mono text-slate-600">/api/v1/images</code></span>
+        <a href="/dashboard/api-test" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">
+          <span>Test Sandbox</span> <i class="fa-solid fa-arrow-right text-[9px]"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Image Modal View -->
+<div id="image-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200">
+    <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+      <h3 id="modal-image-title" class="font-bold text-slate-900 text-base">Image Preview</h3>
+      <button onclick="document.getElementById('image-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+    <div class="p-4 bg-slate-950 flex items-center justify-center max-h-[70vh]">
+      <img id="modal-image-el" src="" alt="Full view" class="max-h-[65vh] object-contain">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js.puter.com/v2/"></script>
+<script src="/static/js/dashboard.js"></script>
+<script>
+  // Set current date in Pure Kolo header badge
+  try {
+    const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+    document.getElementById('current-date-badge').textContent = new Date().toLocaleDateString('en-US', options);
+  } catch (_) {}
+</script>
+{% endblock %}

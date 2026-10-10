@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pure Solver – Session &amp; AI Solver</title>
+<style>
+  /* Everything is sized from the original 1282px-wide design, scaled by --p (1 design px) */
+  :root { --p: 0.078cqw; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 420px;
+    min-width: 420px;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    color: #0c1530;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .wrap {
+    container-type: inline-size;
+    width: 100%;
+  }
+
+  .panel {
+    width: 100%;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    height: calc(270 * var(--p)); flex: none;
+    padding: calc(39 * var(--p)) calc(35 * var(--p)) 0 calc(40 * var(--p));
+    display: flex; justify-content: space-between; align-items: flex-start;
+    background: linear-gradient(100deg, #09246f 0%, #0b3a9d 50%, #1162de 100%);
+    color: #fff;
+  }
+  .brand { display: flex; align-items: center; gap: calc(32 * var(--p)); }
+  .logo {
+    width: calc(176 * var(--p)); height: calc(176 * var(--p)); flex: none;
+    border-radius: calc(46 * var(--p));
+    display: grid; place-items: center;
+    background: linear-gradient(150deg, #1fb0ff 0%, #0b5df2 100%);
+    border: calc(3 * var(--p)) solid rgba(130,200,255,.65);
+    box-shadow: 0 calc(8 * var(--p)) calc(22 * var(--p)) rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .logo svg { width: calc(66 * var(--p)); height: calc(106 * var(--p)); }
+  .title { font-size: calc(76 * var(--p)); font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+  .subtitle {
+    margin-top: calc(14 * var(--p));
+    font-size: calc(37 * var(--p)); font-weight: 500; text-transform: uppercase;
+    letter-spacing: calc(5.2 * var(--p)); color: #dbe7ff; white-space: nowrap;
+  }
+
+  .controls { margin-top: calc(21 * var(--p)); display: flex; flex-direction: column; align-items: flex-end; gap: calc(22 * var(--p)); }
+  .row { display: flex; align-items: center; }
+  .version {
+    width: calc(140 * var(--p)); height: calc(66 * var(--p)); display: grid; place-items: center;
+    border-radius: calc(16 * var(--p));
+    background: rgba(255,255,255,.1); border: calc(2 * var(--p)) solid rgba(150,195,255,.4);
+    font-size: calc(28 * var(--p)); font-weight: 600; color: #cfe0ff;
+  }
+  .sep { width: calc(3 * var(--p)); height: calc(62 * var(--p)); margin: 0 calc(26 * var(--p)) 0 calc(28 * var(--p)); background: rgba(255,255,255,.25); border-radius: 2px; }
+
+  .switch { position: relative; width: calc(128 * var(--p)); height: calc(67 * var(--p)); cursor: pointer; display: block; }
+  .switch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; margin: 0; }
+  .track { position: absolute; inset: 0; border-radius: 999px; background: #0b57f5; border: calc(4 * var(--p)) solid #18b4ff; transition: .2s; }
+  .thumb { position: absolute; top: calc(7 * var(--p)); left: calc(67 * var(--p)); width: calc(53 * var(--p)); height: calc(53 * var(--p)); border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3); transition: left .2s; }
+  .switch input:not(:checked) ~ .track { background: #3a4a6e; border-color: #6a7a9e; }
+  .switch input:not(:checked) ~ .thumb { left: calc(8 * var(--p)); }
+  .switch input:focus-visible ~ .track { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .status {
+    width: calc(349 * var(--p)); height: calc(70 * var(--p));
+    display: flex; align-items: center; gap: calc(22 * var(--p)); padding-left: calc(24 * var(--p));
+    border-radius: 999px; border: calc(3 * var(--p)) solid #14c98b;
+    background: rgba(4,40,80,.35);
+    font-size: calc(31 * var(--p)); font-weight: 600; color: #effff8; white-space: nowrap;
+  }
+  .dot { width: calc(38 * var(--p)); height: calc(38 * var(--p)); border-radius: 50%; background: #19e36b; box-shadow: 0 0 calc(14 * var(--p)) rgba(25,227,107,.85); transition: .2s; flex: none; }
+
+  /* ---------- Body ---------- */
+  .body {
+    flex: 1; margin-top: calc(-34 * var(--p));
+    padding: calc(46 * var(--p)) calc(32 * var(--p)) calc(42 * var(--p));
+    background: #fff; border-radius: calc(40 * var(--p)) calc(40 * var(--p)) 0 0;
+    display: flex; flex-direction: column; gap: calc(30 * var(--p));
+    position: relative;
+  }
+  .card {
+    border: calc(2 * var(--p)) solid #eef1f7; border-radius: calc(40 * var(--p));
+    background: #fff; box-shadow: 0 calc(8 * var(--p)) calc(28 * var(--p)) rgba(30,60,120,.07);
+  }
+
+  /* API key card */
+  .key-card { padding: calc(32 * var(--p)) calc(33 * var(--p)) calc(37 * var(--p)); }
+  .label { display: flex; align-items: center; gap: calc(40 * var(--p)); margin-left: calc(6 * var(--p)); height: calc(65 * var(--p)); }
+  .label svg { width: calc(65 * var(--p)); height: calc(65 * var(--p)); flex: none; }
+  .label span { font-size: calc(34 * var(--p)); font-weight: 700; color: #5a6682; text-transform: uppercase; letter-spacing: .01em; }
+
+  .field {
+    margin-top: calc(19 * var(--p)); height: calc(104 * var(--p));
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 calc(11 * var(--p)) 0 calc(32 * var(--p));
+    border: calc(3 * var(--p)) solid #dce3ee; border-radius: calc(30 * var(--p)); background: #fbfcfe;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field:focus-within {
+    border-color: #0b57f5;
+    box-shadow: 0 0 0 calc(4 * var(--p)) rgba(11,87,245,.15);
+  }
+
+  /* Editable API Key Input */
+  .key-input {
+    flex: 1; min-width: 0; height: 100%;
+    border: none; outline: none; background: transparent;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: calc(36 * var(--p)); font-weight: 700; color: #101a38;
+    letter-spacing: calc(1.5 * var(--p)); padding-right: calc(16 * var(--p));
+  }
+  .key-input[type="password"] {
+    letter-spacing: calc(3 * var(--p));
+    font-size: calc(44 * var(--p));
+  }
+  .key-input::placeholder {
+    color: #94a3b8;
+    font-size: calc(32 * var(--p));
+    font-weight: 500;
+    letter-spacing: normal;
+  }
+
+  .icons { display: flex; align-items: center; gap: calc(16 * var(--p)); }
+  .icons .divider { width: calc(2 * var(--p)); height: calc(54 * var(--p)); background: #dde3ee; }
+  .icon-btn {
+    width: calc(96 * var(--p)); height: calc(80 * var(--p)); display: grid; place-items: center;
+    border: 0; border-radius: calc(20 * var(--p)); background: #eceef3; color: #566179; cursor: pointer; transition: .15s;
+  }
+  .icon-btn.copy { width: calc(80 * var(--p)); }
+  .icon-btn:hover { background: #e1e6f0; }
+  .icon-btn:focus-visible { outline: 3px solid #0a5cff; outline-offset: 2px; }
+  .icon-btn.done { background: #d8f7e7; color: #0b9a55; }
+  .icon-btn svg { width: calc(52 * var(--p)); height: calc(52 * var(--p)); }
+
+  /* Limit card */
+  .limit-card { padding: calc(28 * var(--p)) calc(29 * var(--p)) calc(43 * var(--p)) calc(35 * var(--p)); }
+  .limit { display: flex; align-items: center; gap: calc(34 * var(--p)); }
+  .chart-ico { width: calc(106 * var(--p)); height: calc(106 * var(--p)); flex: none; display: grid; place-items: center; border-radius: calc(24 * var(--p)); background: #eaf2ff; }
+  .chart-ico svg { width: calc(56 * var(--p)); height: calc(56 * var(--p)); }
+  .limit-text { flex: 1; min-width: 0; }
+  .limit-text h2 { font-size: calc(42 * var(--p)); font-weight: 700; letter-spacing: -.01em; line-height: 1.1; white-space: nowrap; }
+  .limit-text p { margin-top: calc(6 * var(--p)); font-size: calc(33 * var(--p)); color: #5f6d89; white-space: nowrap; }
+  .badge {
+    width: calc(295 * var(--p)); height: calc(69 * var(--p)); flex: none; display: grid; place-items: center;
+    border-radius: calc(20 * var(--p)); background: #e1edff; border: calc(2.5 * var(--p)) solid #c2d8fa;
+    font-size: calc(36 * var(--p)); font-weight: 500; color: #0c1530; white-space: nowrap;
+  }
+  .badge b { color: #0a5cff; font-weight: 500; }
+  .bar { margin: calc(31 * var(--p)) calc(5 * var(--p)) 0; height: calc(38 * var(--p)); border-radius: 999px; background: #eceef2; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #11b4ff, #0a55ff); transition: width .3s ease; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="panel">
+    <header class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 66 106"><path d="M42 0 4 58h24L16 106 62 40H38z" fill="#ffae2b"/><path d="M42 0 4 58h24L16 106 40 50 28 50z" fill="#ff8a1f" opacity=".55"/></svg>
+        </div>
+        <div>
+          <h1 class="title">Pure Solver</h1>
+          <div class="subtitle">Session &amp; AI Solver</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="row">
+          <span class="version">v1.0.0</span>
+          <span class="sep"></span>
+          <label class="switch" aria-label="Enable solver">
+            <input type="checkbox" id="power" checked>
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+        <div class="status"><span class="dot" id="dot"></span><span id="statusText">Server Connected</span></div>
+      </div>
+    </header>
+
+    <section class="body">
+      <div class="card key-card">
+        <div class="label">
+          <svg viewBox="0 0 65 65" aria-hidden="true">
+            <defs><linearGradient id="kg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a64cff"/><stop offset="1" stop-color="#5a0fd4"/></linearGradient></defs>
+            <circle cx="41" cy="23" r="20" fill="url(#kg)"/><circle cx="47" cy="17" r="5.5" fill="#fff"/>
+            <path d="M29 33 4 58v7h15v-6h6v-6h6v-6l5-5z" fill="url(#kg)"/>
+          </svg>
+          <span>API Key</span>
+        </div>
+        <div class="field" id="field">
+          <!-- Editable API Key input, masked by default with bullet dots -->
+          <input type="password" id="keyInput" class="key-input" value="PS_900a2dbb943ac30d39ba1993ca3614379a04bb" spellcheck="false" autocomplete="off" placeholder="Enter API Key...">
+          <div class="icons">
+            <button class="icon-btn" id="eye" type="button" aria-label="Show API key">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3.4" fill="currentColor"/></svg>
+            </button>
+            <span class="divider"></span>
+            <button class="icon-btn copy" id="copy" type="button" aria-label="Copy API key">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="3"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card limit-card">
+        <div class="limit">
+          <div class="chart-ico" aria-hidden="true">
+            <svg viewBox="0 0 30 30"><rect x="2" y="12" width="6" height="16" rx="3" fill="#0a5cff"/><rect x="12" y="3" width="6" height="25" rx="3" fill="#0a5cff"/><rect x="22" y="9" width="6" height="19" rx="3" fill="#0a5cff"/></svg>
+          </div>
+          <div class="limit-text">
+            <h2>Daily Solver Limit</h2>
+            <p>Your plan allows <span id="max">12,000</span> solves per day</p>
+          </div>
+          <div class="badge"><span><b id="used">12,000</b> / <span id="cap">12,000</span></span></div>
+        </div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="12000" aria-valuenow="12000" aria-label="Daily solves used">
+          <div class="bar-fill" id="fill" style="width: 100%;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

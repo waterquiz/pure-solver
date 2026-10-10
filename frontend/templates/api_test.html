@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}API Test Console - {{ app_name }}{% endblock %}
+{% block header_title %}API Test Console{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
+    <h3 class="text-xl font-bold text-slate-900 tracking-tight">Interactive API Sandbox</h3>
+    <p class="text-xs text-slate-500 mt-1">Upload images directly to <code class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-mono font-semibold">POST /api/v1/images</code> to simulate browser extensions and test real-time AI solving.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Test Request Panel -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-5">
+      <div class="flex items-center space-x-2 pb-3 border-b border-slate-100">
+        <i class="fa-solid fa-paper-plane text-blue-600 text-sm"></i>
+        <h4 class="font-bold text-sm text-slate-900 uppercase tracking-wide">Request Parameters</h4>
+      </div>
+
+      <form id="api-test-form" class="space-y-4">
+        <!-- API Key Selection or Manual Input -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="test-api-key">API Key (X-API-Key)</label>
+          <div class="space-y-2">
+            <select id="key-selector-dropdown" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+              <option value="">-- Choose from your active API keys --</option>
+            </select>
+            <input type="text" id="manual-api-key-input" placeholder="Or enter secret PS_... key manually" required
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono text-blue-700 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+        </div>
+
+        <!-- File Upload Area -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Image File (file)</label>
+          <div id="drop-zone" class="border-2 border-dashed border-slate-200 hover:border-blue-500 bg-slate-50 rounded-xl p-6 text-center cursor-pointer transition">
+            <input type="file" id="test-file-input" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/tiff" class="hidden">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+            <p class="text-xs text-slate-700 font-medium" id="selected-file-label">Click to browse or drop an image file here</p>
+            <p class="text-[10px] text-slate-400 mt-1">PNG, JPG, WEBP, GIF, BMP, TIFF (Up to 10MB)</p>
+          </div>
+        </div>
+
+        <!-- Optional Form Fields -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="test-custom-filename">Custom Filename (optional)</label>
+            <input type="text" id="test-custom-filename" placeholder="e.g. captcha_grid.png"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="test-client-id">Client ID / Device (optional)</label>
+            <input type="text" id="test-client-id" placeholder="e.g. browser-1"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="test-text">Target Text / Caption (e.g. Blone and moon)</label>
+          <input type="text" id="test-text" placeholder="e.g. Blone and moon"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="send-request-btn"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-sm">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Send POST /api/v1/images</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Test Response Panel -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-4">
+      <div>
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-code text-blue-600 text-sm"></i>
+            <h4 class="font-bold text-sm text-slate-900 uppercase tracking-wide">Live Response</h4>
+          </div>
+
+          <!-- Status badge & latency -->
+          <div class="flex items-center space-x-2">
+            <span id="response-status-badge" class="hidden px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono">200 OK</span>
+            <span id="response-latency-badge" class="hidden text-xs text-slate-400 font-mono">0 ms</span>
+          </div>
+        </div>
+
+        <!-- Response Body Display -->
+        <div class="mt-4">
+          <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">JSON Payload</label>
+          <div class="bg-slate-950 border border-slate-900 rounded-xl p-4 min-h-[220px] max-h-[360px] overflow-auto">
+            <pre id="response-json-viewer" class="text-xs font-mono text-emerald-400 whitespace-pre-wrap">// Waiting for request...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uploaded Image Thumbnail Preview (if success) -->
+      <div id="test-preview-box" class="hidden p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center space-x-4">
+        <img id="test-preview-img" src="" alt="Response Preview" class="w-16 h-16 object-cover rounded-lg border border-slate-200">
+        <div class="overflow-hidden">
+          <p class="text-xs font-bold text-emerald-600"><i class="fa-solid fa-check-circle mr-1"></i> Upload Successful</p>
+          <p class="text-xs text-slate-800 font-mono truncate" id="test-preview-name">-</p>
+          <a id="test-preview-link" href="#" target="_blank" class="text-[11px] text-blue-600 hover:underline font-semibold">View in new tab <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ml-0.5"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/api-test.js"></script>
+{% endblock %}
