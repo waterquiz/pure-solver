@@ -5,7 +5,7 @@
  */
 
 const DEFAULT_CONFIG = {
-  backendUrl        : 'http://localhost:8000',
+  backendUrl        : 'https://pure-solver-production.up.railway.app',
   apiKey            : 'PS_900a2dbb943ac30d39ba1993ca3614379a04bb',
   autoDelay         : 1000,
   waitForAi         : true,
